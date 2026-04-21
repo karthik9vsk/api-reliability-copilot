@@ -4,7 +4,7 @@ export interface Message {
   content: string;
 }
 
-const WORKER_BASE = "http://localhost:8787";
+const WORKER_BASE = "https://cloudflare-api-reliability-copilot.saikarthikveduruparthy.workers.dev";
 
 export async function sendMessage(sessionId: string, message: string) {
   const res = await fetch(`${WORKER_BASE}/api/chat`, {
