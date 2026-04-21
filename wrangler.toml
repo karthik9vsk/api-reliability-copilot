@@ -4,6 +4,7 @@ compatibility_date = "2025-04-21"
 
 [ai]
 binding = "AI"
+remote = true
 
 [[durable_objects.bindings]]
 name = "INCIDENT_SESSION"
@@ -11,4 +12,4 @@ class_name = "IncidentSession"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["IncidentSession"]
+new_sqlite_classes = ["IncidentSession"]

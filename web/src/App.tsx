@@ -25,12 +25,15 @@ export default function App() {
       const response = await sendMessage(sessionId, input.trim());
       setMessages(response.history);
       setInput("");
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Request failed.";
+
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: "Request failed. Make sure the Worker is running locally on port 8787."
+          content: message
         }
       ]);
     } finally {
@@ -45,55 +48,110 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      <div className="header">
-        <h1>API Reliability Copilot</h1>
-        <p>
-          Paste an API incident, log snippet, latency spike, or failing endpoint and get a structured debugging response.
-        </p>
-      </div>
+    <div className="page-shell">
+      {/* Background effects */}
+      <div className="bg-orb orb-1" />
+      <div className="bg-orb orb-2" />
+      <div className="bg-orb orb-3" />
+      <div className="grid-overlay" />
 
-      <div className="panel">
-        <div className="toolbar">
-          <button onClick={() => setInput(example)}>Use example</button>
-          <button onClick={handleReset}>Reset session</button>
-        </div>
+      <div className="app-shell">
+        {/* Header */}
+        <header className="hero">
+          <div className="hero-badge">
+            Cloudflare Workers + AI + Durable Objects
+          </div>
 
-        <div className="chat-window">
-          {messages.length === 0 ? (
-            <div className="empty-state">
-              <p>No messages yet.</p>
-              <p>Try describing an API timeout, elevated latency, or consumer lag issue.</p>
+          <h1>API Reliability Copilot</h1>
+
+          <p>
+            Paste an API incident, log snippet, latency spike, or failing endpoint
+            and get a structured debugging response.
+          </p>
+
+          <div className="hero-stats">
+            <div className="stat-chip">
+              <span className="stat-dot blue" />
+              Incident analysis
             </div>
-          ) : (
-            messages.map((msg, idx) => (
-              <div key={idx} className={`bubble ${msg.role}`}>
-                <div className="role">{msg.role === "user" ? "You" : "Copilot"}</div>
-                <pre>{msg.content}</pre>
-                {msg.role === "assistant" && (
-                  <button
-                    className="copy-btn"
-                    onClick={() => navigator.clipboard.writeText(msg.content)}
-                  >
-                    Copy
-                  </button>
-                )}
-              </div>
-            ))
-          )}
-        </div>
 
-        <div className="composer">
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe the incident, logs, endpoint, and symptoms..."
-            rows={6}
-          />
-          <button onClick={handleSend} disabled={loading}>
-            {loading ? "Analyzing..." : "Analyze incident"}
-          </button>
-        </div>
+            <div className="stat-chip">
+              <span className="stat-dot green" />
+              Session memory
+            </div>
+
+            <div className="stat-chip">
+              <span className="stat-dot purple" />
+              Structured remediation
+            </div>
+          </div>
+        </header>
+
+        {/* Main Panel */}
+        <section className="panel">
+          <div className="toolbar">
+            <button onClick={() => setInput(example)}>Use example</button>
+            <button onClick={handleReset}>Reset session</button>
+          </div>
+
+          {/* Chat */}
+          <div className="chat-window">
+            {messages.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">⌁</div>
+                <h3>No incident analyzed yet</h3>
+                <p>
+                  Try pasting a production issue such as a 502 spike, timeout error,
+                  upstream dependency failure, or latency regression after deployment.
+                </p>
+              </div>
+            ) : (
+              messages.map((msg, idx) => (
+                <div key={idx} className={`bubble ${msg.role}`}>
+                  <div className="bubble-top">
+                    <div className="role">
+                      {msg.role === "user" ? "You" : "Copilot"}
+                    </div>
+
+                    {/* ✅ Final polished Copy button */}
+                    {msg.role === "assistant" && (
+                      <button
+                        className="copy-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(msg.content);
+                        }}
+                      >
+                        Copy response
+                      </button>
+                    )}
+                  </div>
+
+                  <pre>{msg.content}</pre>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="composer">
+            <label className="composer-label">Incident input</label>
+
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Describe the incident, logs, endpoint, and symptoms..."
+              rows={6}
+            />
+
+            <button
+              className="primary-action"
+              onClick={handleSend}
+              disabled={loading}
+            >
+              {loading ? "Analyzing..." : "Analyze incident"}
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );
